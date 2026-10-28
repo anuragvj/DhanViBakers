@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
   <style>
-    body { font-family: sans-serif; max-width: 420px; margin: 3rem auto; padding: 0 1rem; }
+    body { font-family: sans-serif; max-width: 720px; margin: 3rem auto; padding: 0 1rem; }
     input, button { display: block; width: 100%; padding: 0.6rem; margin: 0.5rem 0; box-sizing: border-box; }
     .error { color: #b00020; }
     .hidden { display: none; }
@@ -25,7 +25,14 @@
   <section id="app-view" class="hidden" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); padding: 20px;">
     <p>Signed in as <strong id="user-email"></strong></p>
     <button id="logout-btn">Sign out</button>
-    <p>Win #1 works. Ingredients come next.</p>
+    <h2>Ingredients</h2>
+    <p id="ingredients-status"></p>
+    <table id="ingredients-table" border="1" cellpadding="6">
+      <thead>
+        <tr><th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th><th>Active</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
