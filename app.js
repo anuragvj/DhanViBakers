@@ -22,11 +22,37 @@ function formatIST(value) {
   }) + " IST";
 }
 
+async function loadIngredients() {
+  const status = document.getElementById("ingredients-status");
+  const tbody = document.querySelector("#ingredients-table tbody");
+  status.textContent = "Loading...";
+  tbody.innerHTML = "";
+
+  const { data, error } = await sb.from("ingredients").select("*").order("name");
+  if (error) {
+    status.textContent = "Could not load ingredients: " + error.message;
+    return;
+  }
+
+  status.textContent = data.length ? "" : "No ingredients yet.";
+  for (const row of data) {
+    const tr = document.createElement("tr");
+    const cells = [row.name, row.price, row.price_qty, row.unit, row.is_active ? "Yes" : "No"];
+    for (const value of cells) {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
+
 function showSession(session) {
   if (session) {
     document.getElementById("user-email").textContent = session.user.email;
     loginView.classList.add("hidden");
     appView.classList.remove("hidden");
+    loadIngredients();
   } else {
     appView.classList.add("hidden");
     loginView.classList.remove("hidden");
