@@ -4,27 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
-  <style>
-    body { font-family: sans-serif; max-width: 1100px; margin: 3rem auto; padding: 0 1rem; }
-    input, select, textarea, button { display: block; width: 100%; padding: 0.6rem; margin: 0.4rem 0; box-sizing: border-box; font: inherit; }
-    input[type="checkbox"] { display: inline-block; width: auto; margin-right: 0.5rem; }
-    td button, .inline-btn { display: inline-block; width: auto; margin: 0 0.25rem 0 0; }
-    label { display: block; margin-top: 0.6rem; font-weight: bold; }
-    .hint { margin: 0; font-size: 0.85rem; color: #555; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
-    th, td { border: 1px solid #999; padding: 6px; text-align: left; }
-    dialog { width: min(420px, 92vw); border: 1px solid #666; border-radius: 6px; padding: 1.2rem; }
-    #lines-dialog { width: min(640px, 94vw); }
-    .row-buttons { display: flex; gap: 0.5rem; }
-    .error { color: #b00020; }
-    .hidden { display: none; }
-    section.block { margin-top: 2.5rem; }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <h1>DhanVi Bakers</h1>
 
-  <section id="login-view" class="hidden" style="max-width: 420px;">
+  <section id="login-view" class="hidden">
     <h2>Admin login</h2>
     <input id="email" type="email" placeholder="Email" autocomplete="username">
     <input id="password" type="password" placeholder="Password" autocomplete="current-password">
@@ -201,6 +186,6 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
