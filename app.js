@@ -37,7 +37,7 @@ async function loadIngredients() {
   status.textContent = data.length ? "" : "No ingredients yet.";
   for (const row of data) {
     const tr = document.createElement("tr");
-    const cells = [row.name, row.price, row.price_qty, row.unit, row.is_active ? "Yes" : "No"];
+    const cells = [row.name, row.price, row.price_qty, row.unit, row.is_active ? "Yes" : "No", formatIST(row.updated_at)];
     for (const value of cells) {
       const td = document.createElement("td");
       td.textContent = value;
