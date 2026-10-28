@@ -32,6 +32,7 @@ function showSession(session) {
     loginView.classList.add("hidden");
     appView.classList.remove("hidden");
     loadIngredients();
+    loadRates();
     loadRecipes();
   } else {
     appView.classList.add("hidden");
@@ -172,6 +173,92 @@ async function deleteIngredient(row) {
   }
   loadIngredients();
 }
+
+// =====================================================
+// RATES (two fixed rows: edit only)
+// =====================================================
+const RATE_ORDER = ["labour", "electricity"];
+const RATE_LABELS = { labour: "Labour", electricity: "Electricity" };
+
+async function loadRates() {
+  const status = document.getElementById("rates-status");
+  const tbody = document.querySelector("#rates-table tbody");
+  status.textContent = "Loading...";
+  tbody.innerHTML = "";
+
+  const { data, error } = await sb.from("rates").select("*");
+  if (error) {
+    status.textContent = "Could not load rates: " + error.message;
+    return;
+  }
+
+  status.textContent = data.length ? "" : "No rates found. Run the rates SQL script.";
+  // Show Labour first, then Electricity
+  data.sort((a, b) => RATE_ORDER.indexOf(a.name) - RATE_ORDER.indexOf(b.name));
+
+  for (const row of data) {
+    const tr = document.createElement("tr");
+    addCell(tr, RATE_LABELS[row.name] || row.name);
+    addCell(tr, row.rate_per_hour);
+    addCell(tr, formatIST(row.updated_at));
+
+    const actions = document.createElement("td");
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", () => openRateForm(row));
+    actions.appendChild(editBtn);
+    tr.appendChild(actions);
+
+    tbody.appendChild(tr);
+  }
+}
+
+const rateDialog = document.getElementById("rate-dialog");
+const rateForm = document.getElementById("rate-form");
+const rateFormError = document.getElementById("rate-form-error");
+
+function openRateForm(row) {
+  rateFormError.textContent = "";
+  rateForm.reset();
+  document.getElementById("rate-dialog-title").textContent = `Edit rate: ${RATE_LABELS[row.name] || row.name}`;
+  document.getElementById("rt-name").value = row.name;
+  document.getElementById("rt-rate").value = row.rate_per_hour;
+  rateDialog.showModal();
+}
+
+document.getElementById("rate-cancel-btn").addEventListener("click", () => rateDialog.close());
+
+function rateFriendlyError(error) {
+  if (error.code === "23514") return "The rate cannot be negative.";
+  return error.message;
+}
+
+rateForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  rateFormError.textContent = "";
+  const saveBtn = document.getElementById("rate-save-btn");
+  saveBtn.disabled = true;
+
+  const name = document.getElementById("rt-name").value;
+  const rate = Number(document.getElementById("rt-rate").value);
+
+  const { data, error } = await sb.from("rates")
+    .update({ rate_per_hour: rate })
+    .eq("name", name)
+    .select();
+  saveBtn.disabled = false;
+
+  if (error) {
+    rateFormError.textContent = rateFriendlyError(error);
+    return;
+  }
+  if (!data || data.length === 0) {
+    rateFormError.textContent = "Nothing was saved. Reload the page and try again.";
+    return;
+  }
+  rateDialog.close();
+  loadRates();
+});
 
 // =====================================================
 // RECIPES
@@ -370,8 +457,9 @@ async function loadLines() {
   fillIngredientSelect(null);
 }
 
-// When adding: active ingredients not already in the recipe.
-// When editing: just the one ingredient of that line (it cannot be changed).
+// When adding: a "Select ingredient" placeholder, then the active ingredients
+// not already in the recipe. When editing: just the one ingredient of that
+// line (it cannot be changed), with no placeholder.
 function fillIngredientSelect(editingIngredientId) {
   lineSelect.innerHTML = "";
   const usedIds = new Set(currentLines.map((l) => l.ingredient_id));
@@ -379,11 +467,12 @@ function fillIngredientSelect(editingIngredientId) {
     editingIngredientId ? i.id === editingIngredientId : i.is_active && !usedIds.has(i.id)
   );
 
-  if (options.length === 0) {
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = "No more ingredients available";
-    lineSelect.appendChild(opt);
+  if (!editingIngredientId) {
+    const placeholder = document.createElement("option");
+    placeholder.value = "";   // empty value fails the "required" check, so it cannot be saved
+    placeholder.textContent = options.length ? "Select ingredient" : "No more ingredients available";
+    placeholder.selected = true;
+    lineSelect.appendChild(placeholder);
   }
   for (const i of options) {
     const opt = document.createElement("option");
