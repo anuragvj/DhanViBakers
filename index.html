@@ -52,6 +52,18 @@
       </table>
     </section>
 
+    <!-- ===== Rates ===== -->
+    <section class="block">
+      <h2>Rates</h2>
+      <p id="rates-status"></p>
+      <table id="rates-table">
+        <thead>
+          <tr><th>Name</th><th>Rate (₹ per hour)</th><th>Last updated</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
     <!-- ===== Recipes ===== -->
     <section class="block">
       <h2>Recipes</h2>
@@ -101,6 +113,24 @@
       <div class="row-buttons">
         <button type="submit" id="save-btn">Save</button>
         <button type="button" id="cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Pop-up: rate form (Edit only) -->
+  <dialog id="rate-dialog">
+    <form id="rate-form">
+      <h3 id="rate-dialog-title"></h3>
+      <input type="hidden" id="rt-name">
+
+      <label for="rt-rate">Rate (₹ per hour)</label>
+      <input id="rt-rate" type="number" step="0.01" min="0" required>
+      <p class="hint">Recipe cost = rate × minutes ÷ 60. For electricity, use an average hourly figure across the appliances you use.</p>
+
+      <p id="rate-form-error" class="error"></p>
+      <div class="row-buttons">
+        <button type="submit" id="rate-save-btn">Save</button>
+        <button type="button" id="rate-cancel-btn">Cancel</button>
       </div>
     </form>
   </dialog>
