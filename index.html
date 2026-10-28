@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
   <style>
-    body { font-family: sans-serif; max-width: 1000px; margin: 3rem auto; padding: 0 1rem; }
+    body { font-family: sans-serif; max-width: 1100px; margin: 3rem auto; padding: 0 1rem; }
     input, select, textarea, button { display: block; width: 100%; padding: 0.6rem; margin: 0.4rem 0; box-sizing: border-box; font: inherit; }
     input[type="checkbox"] { display: inline-block; width: auto; margin-right: 0.5rem; }
     td button, .inline-btn { display: inline-block; width: auto; margin: 0 0.25rem 0 0; }
     label { display: block; margin-top: 0.6rem; font-weight: bold; }
+    .hint { margin: 0; font-size: 0.85rem; color: #555; }
     table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
     th, td { border: 1px solid #999; padding: 6px; text-align: left; }
     dialog { width: min(420px, 92vw); border: 1px solid #666; border-radius: 6px; padding: 1.2rem; }
@@ -59,7 +60,8 @@
       <table id="recipes-table">
         <thead>
           <tr>
-            <th>Name</th><th>Labour (min)</th><th>Oven (min)</th><th>Ingredients</th>
+            <th>Name</th><th>Labour (min)</th><th>Electricity (min)</th>
+            <th>Product qty (g)</th><th>Other cost (₹)</th><th>Ingredients</th>
             <th>Notes</th><th>Last updated</th><th>Actions</th>
           </tr>
         </thead>
@@ -115,8 +117,16 @@
       <label for="r-labour">Labour time (minutes)</label>
       <input id="r-labour" type="number" step="any" min="0" value="0" required>
 
-      <label for="r-electricity">Oven / electricity time (minutes)</label>
+      <label for="r-electricity">Electricity time (minutes)</label>
       <input id="r-electricity" type="number" step="any" min="0" value="0" required>
+
+      <label for="r-product-qty">Product quantity (g)</label>
+      <input id="r-product-qty" type="number" step="any" min="0" value="0" required>
+      <p class="hint">Final weight of the finished product, after baking.</p>
+
+      <label for="r-other-cost">Other cost (₹)</label>
+      <input id="r-other-cost" type="number" step="0.01" min="0" value="0" required>
+      <p class="hint">Fixed amount for baking paper, packing bags, etc. Put labour time in Labour minutes, not here, so it is not counted twice.</p>
 
       <label for="r-notes">Notes</label>
       <textarea id="r-notes" rows="2"></textarea>
