@@ -5,16 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
   <style>
-    body { font-family: sans-serif; max-width: 720px; margin: 3rem auto; padding: 0 1rem; }
-    input, button { display: block; width: 100%; padding: 0.6rem; margin: 0.5rem 0; box-sizing: border-box; }
+    body { font-family: sans-serif; max-width: 900px; margin: 3rem auto; padding: 0 1rem; }
+    input, select, textarea, button { display: block; width: 100%; padding: 0.6rem; margin: 0.4rem 0; box-sizing: border-box; font: inherit; }
+    input[type="checkbox"] { display: inline-block; width: auto; margin-right: 0.5rem; }
+    td button, .inline-btn { display: inline-block; width: auto; margin: 0 0.25rem 0 0; }
+    label { display: block; margin-top: 0.6rem; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #999; padding: 6px; text-align: left; }
+    dialog { width: min(420px, 92vw); border: 1px solid #666; border-radius: 6px; padding: 1.2rem; }
+    .row-buttons { display: flex; gap: 0.5rem; }
     .error { color: #b00020; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
-  <h1><b>DhanVi Bakers</b></h1>
+  <h1>DhanVi Bakers</h1>
 
-  <section id="login-view" class="hidden" style="border: 2px solid black; padding: 15px;">
+  <section id="login-view" class="hidden" style="max-width: 420px;">
     <h2>Admin login</h2>
     <input id="email" type="email" placeholder="Email" autocomplete="username">
     <input id="password" type="password" placeholder="Password" autocomplete="current-password">
@@ -22,18 +29,58 @@
     <p id="login-error" class="error"></p>
   </section>
 
-  <section id="app-view" class="hidden" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); padding: 20px;">
+  <section id="app-view" class="hidden">
     <p>Signed in as <strong id="user-email"></strong></p>
-    <button id="logout-btn">Sign out</button>
+    <button id="logout-btn" class="inline-btn">Sign out</button>
+
     <h2>Ingredients</h2>
+    <button id="add-ingredient-btn" class="inline-btn">+ Add ingredient</button>
     <p id="ingredients-status"></p>
-    <table id="ingredients-table" border="1" cellpadding="6">
+    <table id="ingredients-table">
       <thead>
-        <tr><th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th><th>Active</th><th>Last updated</th></tr>
+        <tr>
+          <th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th>
+          <th>Active</th><th>Notes</th><th>Last updated</th><th>Actions</th>
+        </tr>
       </thead>
       <tbody></tbody>
     </table>
   </section>
+
+  <!-- Pop-up form, shared by Add and Edit -->
+  <dialog id="ingredient-dialog">
+    <form id="ingredient-form">
+      <h3 id="dialog-title"></h3>
+      <input type="hidden" id="f-id">
+
+      <label for="f-name">Name</label>
+      <input id="f-name" type="text" required>
+
+      <label for="f-price">Price (₹)</label>
+      <input id="f-price" type="number" step="0.01" min="0" required>
+
+      <label for="f-price-qty">Price is for this quantity</label>
+      <input id="f-price-qty" type="number" step="any" min="0.001" required>
+
+      <label for="f-unit">Unit</label>
+      <select id="f-unit" required>
+        <option value="g">g (grams)</option>
+        <option value="ml">ml (millilitres)</option>
+        <option value="piece">piece</option>
+      </select>
+
+      <label for="f-notes">Notes</label>
+      <textarea id="f-notes" rows="2"></textarea>
+
+      <label><input id="f-active" type="checkbox"> Active</label>
+
+      <p id="form-error" class="error"></p>
+      <div class="row-buttons">
+        <button type="submit" id="save-btn">Save</button>
+        <button type="button" id="cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
   <script src="app.js"></script>
