@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
   <style>
-    body { font-family: sans-serif; max-width: 900px; margin: 3rem auto; padding: 0 1rem; }
+    body { font-family: sans-serif; max-width: 1000px; margin: 3rem auto; padding: 0 1rem; }
     input, select, textarea, button { display: block; width: 100%; padding: 0.6rem; margin: 0.4rem 0; box-sizing: border-box; font: inherit; }
     input[type="checkbox"] { display: inline-block; width: auto; margin-right: 0.5rem; }
     td button, .inline-btn { display: inline-block; width: auto; margin: 0 0.25rem 0 0; }
     label { display: block; margin-top: 0.6rem; font-weight: bold; }
-    table { border-collapse: collapse; width: 100%; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
     th, td { border: 1px solid #999; padding: 6px; text-align: left; }
     dialog { width: min(420px, 92vw); border: 1px solid #666; border-radius: 6px; padding: 1.2rem; }
+    #lines-dialog { width: min(640px, 94vw); }
     .row-buttons { display: flex; gap: 0.5rem; }
     .error { color: #b00020; }
     .hidden { display: none; }
+    section.block { margin-top: 2.5rem; }
   </style>
 </head>
 <body>
@@ -33,21 +35,40 @@
     <p>Signed in as <strong id="user-email"></strong></p>
     <button id="logout-btn" class="inline-btn">Sign out</button>
 
-    <h2>Ingredients</h2>
-    <button id="add-ingredient-btn" class="inline-btn">+ Add ingredient</button>
-    <p id="ingredients-status"></p>
-    <table id="ingredients-table">
-      <thead>
-        <tr>
-          <th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th>
-          <th>Active</th><th>Notes</th><th>Last updated</th><th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <!-- ===== Ingredients ===== -->
+    <section class="block">
+      <h2>Ingredients</h2>
+      <button id="add-ingredient-btn" class="inline-btn">+ Add ingredient</button>
+      <p id="ingredients-status"></p>
+      <table id="ingredients-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th>
+            <th>Active</th><th>Notes</th><th>Last updated</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- ===== Recipes ===== -->
+    <section class="block">
+      <h2>Recipes</h2>
+      <button id="add-recipe-btn" class="inline-btn">+ Add recipe</button>
+      <p id="recipes-status"></p>
+      <table id="recipes-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Labour (min)</th><th>Oven (min)</th><th>Ingredients</th>
+            <th>Notes</th><th>Last updated</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
   </section>
 
-  <!-- Pop-up form, shared by Add and Edit -->
+  <!-- Pop-up: ingredient form (Add and Edit) -->
   <dialog id="ingredient-dialog">
     <form id="ingredient-form">
       <h3 id="dialog-title"></h3>
@@ -80,6 +101,63 @@
         <button type="button" id="cancel-btn">Cancel</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- Pop-up: recipe form (Add and Edit) -->
+  <dialog id="recipe-dialog">
+    <form id="recipe-form">
+      <h3 id="recipe-dialog-title"></h3>
+      <input type="hidden" id="r-id">
+
+      <label for="r-name">Name</label>
+      <input id="r-name" type="text" required>
+
+      <label for="r-labour">Labour time (minutes)</label>
+      <input id="r-labour" type="number" step="any" min="0" value="0" required>
+
+      <label for="r-electricity">Oven / electricity time (minutes)</label>
+      <input id="r-electricity" type="number" step="any" min="0" value="0" required>
+
+      <label for="r-notes">Notes</label>
+      <textarea id="r-notes" rows="2"></textarea>
+
+      <p id="recipe-form-error" class="error"></p>
+      <div class="row-buttons">
+        <button type="submit" id="recipe-save-btn">Save</button>
+        <button type="button" id="recipe-cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Pop-up: ingredients of one recipe -->
+  <dialog id="lines-dialog">
+    <h3 id="lines-title"></h3>
+    <p id="lines-status"></p>
+    <table id="lines-table">
+      <thead>
+        <tr><th>Ingredient</th><th>Quantity</th><th>Unit</th><th>Actions</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <form id="line-form">
+      <h4 id="line-form-title">Add ingredient</h4>
+      <input type="hidden" id="l-id">
+
+      <label for="l-ingredient">Ingredient</label>
+      <select id="l-ingredient" required></select>
+
+      <label for="l-quantity">Quantity (<span id="l-unit">-</span>)</label>
+      <input id="l-quantity" type="number" step="any" min="0.001" required>
+
+      <p id="line-form-error" class="error"></p>
+      <div class="row-buttons">
+        <button type="submit" id="line-save-btn">Add</button>
+        <button type="button" id="line-cancel-btn" class="hidden">Cancel edit</button>
+      </div>
+    </form>
+    <hr>
+    <button type="button" id="lines-close-btn">Close</button>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
