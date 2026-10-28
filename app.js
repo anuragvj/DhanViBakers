@@ -22,13 +22,14 @@ function formatIST(value) {
   }) + " IST";
 }
 
+// To get ingredient table
 async function loadIngredients() {
   const status = document.getElementById("ingredients-status");
   const tbody = document.querySelector("#ingredients-table tbody");
   status.textContent = "Loading...";
   tbody.innerHTML = "";
 
-  const { data, error } = await sb.from("ingredients").select("*").order("name");
+  const { data, error } = await sb.from("ingredients").select("*").order("id");
   if (error) {
     status.textContent = "Could not load ingredients: " + error.message;
     return;
