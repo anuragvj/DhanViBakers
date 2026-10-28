@@ -196,6 +196,8 @@ async function loadRecipes() {
     addCell(tr, row.name);
     addCell(tr, row.labour_min);
     addCell(tr, row.electricity_min);
+    addCell(tr, row.product_qty_g);
+    addCell(tr, row.other_cost);
 
     const ingTd = document.createElement("td");
     const ingBtn = document.createElement("button");
@@ -227,13 +229,15 @@ const recipeFormError = document.getElementById("recipe-form-error");
 
 function openRecipeForm(row) {
   recipeFormError.textContent = "";
-  recipeForm.reset(); // minutes go back to 0
+  recipeForm.reset(); // numeric fields go back to 0
   if (row) {
     document.getElementById("recipe-dialog-title").textContent = "Edit recipe";
     document.getElementById("r-id").value = row.id;
     document.getElementById("r-name").value = row.name;
     document.getElementById("r-labour").value = row.labour_min;
     document.getElementById("r-electricity").value = row.electricity_min;
+    document.getElementById("r-product-qty").value = row.product_qty_g;
+    document.getElementById("r-other-cost").value = row.other_cost;
     document.getElementById("r-notes").value = row.notes || "";
   } else {
     document.getElementById("recipe-dialog-title").textContent = "Add recipe";
@@ -247,7 +251,7 @@ document.getElementById("recipe-cancel-btn").addEventListener("click", () => rec
 
 function recipeFriendlyError(error) {
   if (error.code === "23505") return "A recipe with this name already exists.";
-  if (error.code === "23514") return "Minutes cannot be negative.";
+  if (error.code === "23514") return "Minutes, product quantity and other cost cannot be negative.";
   return error.message;
 }
 
@@ -262,6 +266,8 @@ recipeForm.addEventListener("submit", async (event) => {
     name: document.getElementById("r-name").value.trim(),
     labour_min: Number(document.getElementById("r-labour").value),
     electricity_min: Number(document.getElementById("r-electricity").value),
+    product_qty_g: Number(document.getElementById("r-product-qty").value),
+    other_cost: Number(document.getElementById("r-other-cost").value),
     notes: document.getElementById("r-notes").value.trim() || null,
   };
 
