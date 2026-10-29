@@ -21,50 +21,114 @@
     <p>Signed in as <strong id="user-email"></strong></p>
     <button id="logout-btn" class="inline-btn">Sign out</button>
 
-    <!-- ===== Ingredients ===== -->
-    <section class="block">
-      <h2>Ingredients</h2>
-      <button id="add-ingredient-btn" class="inline-btn">+ Add ingredient</button>
-      <p id="ingredients-status"></p>
-      <table id="ingredients-table">
-        <thead>
-          <tr>
-            <th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th>
-            <th>Active</th><th>Notes</th><th>Last updated</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+    <nav class="tabs">
+      <button type="button" class="inline-btn tab-btn" data-tab="setup">Setup</button>
+      <button type="button" class="inline-btn tab-btn" data-tab="recipe-cost">Recipe cost</button>
+    </nav>
 
-    <!-- ===== Rates ===== -->
-    <section class="block">
-      <h2>Rates</h2>
-      <p id="rates-status"></p>
-      <table id="rates-table">
-        <thead>
-          <tr><th>Name</th><th>Rate (₹ per hour)</th><th>Last updated</th><th>Actions</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+    <!-- ===== Tab: Setup ===== -->
+    <div id="tab-setup" class="tab-panel">
 
-    <!-- ===== Recipes ===== -->
-    <section class="block">
-      <h2>Recipes</h2>
-      <button id="add-recipe-btn" class="inline-btn">+ Add recipe</button>
-      <p id="recipes-status"></p>
-      <table id="recipes-table">
-        <thead>
-          <tr>
-            <th>Name</th><th>Labour (min)</th><th>Electricity (min)</th>
-            <th>Product qty (g)</th><th>Other cost (₹)</th><th>Ingredients</th>
-            <th>Notes</th><th>Last updated</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+      <section class="block">
+        <h2>Ingredients</h2>
+        <button id="add-ingredient-btn" class="inline-btn">+ Add ingredient</button>
+        <p id="ingredients-status"></p>
+        <table id="ingredients-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Price (₹)</th><th>For quantity</th><th>Unit</th>
+              <th>Active</th><th>Notes</th><th>Last updated</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="block">
+        <h2>Rates</h2>
+        <p id="rates-status"></p>
+        <table id="rates-table">
+          <thead>
+            <tr><th>Name</th><th>Rate (₹ per hour)</th><th>Last updated</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="block">
+        <h2>Recipes</h2>
+        <button id="add-recipe-btn" class="inline-btn">+ Add recipe</button>
+        <p id="recipes-status"></p>
+        <table id="recipes-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Labour (min)</th><th>Electricity (min)</th>
+              <th>Product qty (g)</th><th>Other cost (₹)</th><th>Ingredients</th>
+              <th>Notes</th><th>Last updated</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </div>
+
+    <!-- ===== Tab: Recipe cost ===== -->
+    <div id="tab-cost" class="tab-panel hidden">
+      <section class="block">
+        <h2>Recipe cost</h2>
+        <label for="cost-recipe">Recipe</label>
+        <select id="cost-recipe"></select>
+        <p id="cost-status"></p>
+
+        <div id="cost-result" class="hidden">
+
+          <h3>1. Ingredients</h3>
+          <table id="cost-lines-table">
+            <thead>
+              <tr><th>Ingredient</th><th>Quantity</th><th>Unit</th><th>Cost (₹)</th></tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr class="total-row"><td colspan="3">Total ingredient cost</td><td id="cost-ingredient-total" class="num"></td></tr>
+              <tr><td colspan="3">Raw material weight (g ingredients only)</td><td id="cost-raw-weight" class="num"></td></tr>
+            </tfoot>
+          </table>
+          <p id="cost-raw-note" class="hint"></p>
+
+          <h3>2. Cost breakdown</h3>
+          <table id="cost-breakdown-table">
+            <tbody></tbody>
+          </table>
+          <p id="cost-rate-warning" class="hint warning"></p>
+
+          <h3>3. Insights</h3>
+          <div class="cards">
+            <div class="card">
+              <h4>End product (actual weight)</h4>
+              <dl id="cost-actual-stats" class="stats"></dl>
+              <p id="cost-actual-note" class="hint"></p>
+            </div>
+            <div class="card">
+              <h4>Estimated from raw materials</h4>
+              <dl id="cost-est-stats" class="stats"></dl>
+              <p id="cost-est-note" class="hint"></p>
+            </div>
+          </div>
+
+          <h3>4. Cost for an order</h3>
+          <form id="order-form">
+            <label for="order-grams">Order quantity (g)</label>
+            <div class="order-row">
+              <input id="order-grams" type="number" step="any" min="0.001" placeholder="e.g. 300" required>
+              <button type="submit" class="inline-btn">Calculate</button>
+            </div>
+          </form>
+          <div id="order-result"></div>
+
+        </div>
+      </section>
+    </div>
   </section>
 
   <!-- Pop-up: ingredient form (Add and Edit) -->
