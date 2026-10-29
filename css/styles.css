@@ -13,3 +13,23 @@ dialog { width: min(420px, 92vw); border: 1px solid #666; border-radius: 6px; pa
 .error { color: #b00020; }
 .hidden { display: none; }
 section.block { margin-top: 2.5rem; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0.5rem; margin: 1.5rem 0 0; border-bottom: 2px solid #999; }
+.tab-btn { margin: 0; border: 1px solid #999; border-bottom: none; background: #f0f0f0; cursor: pointer; }
+.tab-btn.active { background: #fff; font-weight: bold; position: relative; top: 2px; }
+
+/* Recipe cost tab */
+.num { text-align: right; }
+.total-row td { font-weight: bold; }
+.warning { color: #8a6d00; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.card { border: 1px solid #999; border-radius: 6px; padding: 1rem; }
+.card h4 { margin: 0 0 0.75rem; }
+.stats { display: grid; grid-template-columns: 1fr auto; gap: 0.3rem 1rem; margin: 0; }
+.stats dt, .stats dd { margin: 0; }
+.stats dd { text-align: right; }
+.stats .strong { font-weight: bold; }
+.order-row { display: flex; gap: 0.5rem; align-items: center; }
+.order-row input { width: 10rem; margin: 0; }
+.order-row button { margin: 0; }
