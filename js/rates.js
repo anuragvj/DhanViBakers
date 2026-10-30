@@ -1,5 +1,5 @@
 import { sb } from "./supabaseClient.js";
-import { formatIST, addCell } from "./utils.js";
+import { formatIST, addCell, systemMessage } from "./utils.js";
 
 const RATE_ORDER = ["labour", "electricity"];
 const RATE_LABELS = { labour: "Labour", electricity: "Electricity" };
