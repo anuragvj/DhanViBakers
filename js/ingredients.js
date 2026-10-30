@@ -1,5 +1,5 @@
 import { sb } from "./supabaseClient.js";
-import { formatIST, addCell } from "./utils.js";
+import { formatIST, addCell, systemMessage } from "./utils.js";
 
 const dialog = document.getElementById("ingredient-dialog");
 const form = document.getElementById("ingredient-form");
