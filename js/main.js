@@ -4,6 +4,7 @@ import { initRates, loadRates } from "./rates.js";
 import { initRecipes, loadRecipes } from "./recipes.js";
 import { initRecipeLines } from "./recipeLines.js";
 import { initRecipeCost, loadRecipeCost } from "./recipeCost.js";
+import { initBackup } from "./backup.js";
 import { initTabs, refreshCurrentTab } from "./tabs.js";
 
 // Attach all the button and form listeners once.
@@ -12,9 +13,10 @@ initRates();
 initRecipes();
 initRecipeLines(loadRecipes);
 initRecipeCost();
+initBackup();
 initTabs({ "recipe-cost": loadRecipeCost }); // runs when the Recipe cost tab opens
 
-// Load the data whenever someone is signed in.
+// Load the data whenever someone signs in.
 initAuth(() => {
   loadIngredients();
   loadRates();
