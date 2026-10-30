@@ -1,5 +1,5 @@
 import { sb } from "./supabaseClient.js";
-import { addCell } from "./utils.js";
+import { addCell, systemMessage } from "./utils.js";
 
 const linesDialog = document.getElementById("lines-dialog");
 const lineForm = document.getElementById("line-form");
