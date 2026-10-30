@@ -38,3 +38,7 @@ section.block { margin-top: 2.5rem; }
 #scale-result p { margin: 0.25rem 0; }
 #scale-result table { margin-top: 1rem; }
 #scale-result .strong { font-weight: bold; }
+
+/* Login and backup */
+label.plain { font-weight: normal; }
+#backup-status { margin: 0.75rem 0; }
