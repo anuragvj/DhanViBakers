@@ -269,7 +269,7 @@ function renderScale() {
 
   // Total batch cost, using the actual cost per gram from the first insight
   addLine(scaleResult, `Cost per gram (actual end product): ${rupeesPerGram(actualPerGram)}`);
-  addLine(scaleResult, `Total batch cost: ${rupeesPerGram(actualPerGram)} per g × ${weightFmt.format(batchWeight)} g = ${rupees(actualPerGram * batchWeight)}`, "strong");
+  addLine(scaleResult, `Total batch cost: ${rupeesPerGram(actualPerGram)} per g × ${weightFmt.format(goal)} g = ${rupees(actualPerGram * goal)}`, "strong");
 }
 
 export function initRecipeCost() {
