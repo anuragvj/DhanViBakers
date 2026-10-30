@@ -1,5 +1,5 @@
 import { sb } from "./supabaseClient.js";
-import { formatIST, addCell } from "./utils.js";
+import { formatIST, addCell, systemMessage } from "./utils.js";
 import { openLinesDialog } from "./recipeLines.js";
 
 const recipeDialog = document.getElementById("recipe-dialog");
