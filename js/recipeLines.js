@@ -125,6 +125,8 @@ function startEditLine(line) {
 }
 
 function lineFriendlyError(error) {
+  const system = systemMessage(error);
+  if (system) return system;
   if (error.code === "23505") return "This ingredient is already in the recipe. Edit its quantity instead.";
   if (error.code === "23514") return "Quantity must be greater than 0.";
   if (error.code === "23503") return "That ingredient or recipe no longer exists. Close this window and reopen it.";
