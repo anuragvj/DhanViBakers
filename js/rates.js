@@ -51,6 +51,8 @@ function openRateForm(row) {
 }
 
 function rateFriendlyError(error) {
+  const system = systemMessage(error);
+  if (system) return system;
   if (error.code === "23514") return "The rate cannot be negative.";
   return error.message;
 }
