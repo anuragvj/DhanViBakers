@@ -13,6 +13,8 @@
     <h2>Admin login</h2>
     <input id="email" type="email" placeholder="Email" autocomplete="username">
     <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+    <label class="plain"><input id="remember" type="checkbox"> Keep me signed in on this device</label>
+    <p class="hint">Leave this unticked on a shared computer.</p>
     <button id="login-btn">Sign in</button>
     <p id="login-error" class="error"></p>
   </section>
@@ -24,6 +26,7 @@
     <nav class="tabs">
       <button type="button" class="inline-btn tab-btn" data-tab="setup">Setup</button>
       <button type="button" class="inline-btn tab-btn" data-tab="recipe-cost">Recipe cost</button>
+      <button type="button" class="inline-btn tab-btn" data-tab="backup">Backup</button>
     </nav>
 
     <!-- ===== Tab: Setup ===== -->
@@ -136,6 +139,19 @@
           <div id="scale-result"></div>
 
         </div>
+      </section>
+    </div>
+    <!-- ===== Tab: Backup ===== -->
+    <div id="tab-backup" class="tab-panel hidden">
+      <section class="block">
+        <h2>Backup</h2>
+        <p>Download a copy of your data: ingredients, rates, recipes and recipe ingredients.</p>
+        <div class="row-buttons">
+          <button type="button" id="backup-json-btn" class="inline-btn">Download JSON</button>
+          <button type="button" id="backup-csv-btn" class="inline-btn">Download CSV (zip)</button>
+        </div>
+        <p id="backup-status"></p>
+        <p class="hint">JSON is one file with all four tables. The CSV zip has one file per table, which opens in Excel. These files contain your prices and costs, so keep them somewhere private and never put them in the GitHub repository.</p>
       </section>
     </div>
   </section>
@@ -259,6 +275,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
