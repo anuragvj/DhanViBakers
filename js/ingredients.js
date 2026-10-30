@@ -63,6 +63,8 @@ function openIngredientForm(row) {
 }
 
 function friendlyError(error) {
+  const system = systemMessage(error);
+  if (system) return system;
   if (error.code === "23505") return "An ingredient with this name already exists.";
   if (error.code === "23514") return "One of the values is not allowed (check price, quantity and unit).";
   if (error.code === "23503") return "This ingredient is used in a recipe and cannot be deleted. Remove it from the recipe first, or mark it inactive.";
