@@ -73,6 +73,8 @@ function openRecipeForm(row) {
 }
 
 function recipeFriendlyError(error) {
+  const system = systemMessage(error);
+  if (system) return system;
   if (error.code === "23505") return "A recipe with this name already exists.";
   if (error.code === "23514") return "Minutes, product quantity and other cost cannot be negative.";
   return error.message;
