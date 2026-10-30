@@ -8,23 +8,29 @@ const YIELD_PERCENT = Math.round(ESTIMATED_YIELD * 100);
 
 const moneyFmt = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const perGramFmt = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-const weightFmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 });
+const weightFmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 }); // 2 decimals, trailing zeros trimmed
+const multFmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 3 });
 const rupees = (n) => "₹ " + moneyFmt.format(n);
 const rupeesPerGram = (n) => "₹ " + perGramFmt.format(n);
 
 const select = document.getElementById("cost-recipe");
 const statusEl = document.getElementById("cost-status");
 const resultEl = document.getElementById("cost-result");
+const mainReport = document.getElementById("cost-report-main");
+const template = document.getElementById("cost-report-template");
 const orderForm = document.getElementById("order-form");
 const orderResult = document.getElementById("order-result");
+const scaleForm = document.getElementById("scale-form");
+const scaleResult = document.getElementById("scale-result");
 
-let current = null; // cost per gram figures of the selected recipe, used by the order calculator
+let current = null; // { s, lines, actualPerGram, estPerGram } for the selected recipe
 let requestId = 0;  // lets us ignore a slow response from an earlier selection
 
 function clearResult() {
   current = null;
   resultEl.classList.add("hidden");
   orderResult.innerHTML = "";
+  scaleResult.innerHTML = "";
   statusEl.textContent = "";
 }
 
@@ -84,6 +90,7 @@ async function showRecipe(id) {
   render(sumRes.data, linesRes.data);
 }
 
+// ---------- Drawing helpers ----------
 function addRow(tbody, label, value, strong) {
   const tr = document.createElement("tr");
   addCell(tr, label);
@@ -92,8 +99,7 @@ function addRow(tbody, label, value, strong) {
   tbody.appendChild(tr);
 }
 
-function fillStats(statsId, noteId, rows, note) {
-  const dl = document.getElementById(statsId);
+function fillStats(dl, noteEl, rows, note) {
   dl.innerHTML = "";
   for (const [label, value, strong] of rows) {
     const dt = document.createElement("dt");
@@ -103,24 +109,35 @@ function fillStats(statsId, noteId, rows, note) {
     if (strong) dt.className = dd.className = "strong";
     dl.append(dt, dd);
   }
-  document.getElementById(noteId).textContent = note || "";
+  noteEl.textContent = note || "";
 }
 
-function render(s, lines) {
+function addLine(container, text, className) {
+  const p = document.createElement("p");
+  p.textContent = text;
+  if (className) p.className = className;
+  container.appendChild(p);
+}
+
+// Draws sections 1 to 3 (ingredients, cost breakdown, insights) for the recipe as saved.
+function buildReport(container, s, lines) {
   const total = Number(s.total_cost);
   const productQty = Number(s.product_qty_g);
   const rawWeight = Number(s.raw_weight_g);
   const estWeight = rawWeight * ESTIMATED_YIELD;
   const actualPerGram = productQty > 0 ? total / productQty : null;
   const estPerGram = estWeight > 0 ? total / estWeight : null;
-  current = { actualPerGram, estPerGram };
+  const nonGram = Number(s.non_gram_lines);
 
-  statusEl.textContent = lines.length ? "" : "No ingredients in this recipe yet.";
-  orderResult.innerHTML = "";
+  const frag = template.content.cloneNode(true);
+  const q = (name) => frag.querySelector(`[data-r="${name}"]`);
 
-  // 1. Ingredients
-  const linesBody = document.querySelector("#cost-lines-table tbody");
-  linesBody.innerHTML = "";
+  q("title-lines").textContent = "1. Ingredients";
+  q("title-breakdown").textContent = "2. Cost breakdown";
+  q("title-insights").textContent = "3. Insights";
+
+  // Ingredients
+  const linesBody = q("lines-body");
   for (const line of lines) {
     const tr = document.createElement("tr");
     addCell(tr, line.ingredient_name + (line.is_active ? "" : " (inactive)"));
@@ -129,16 +146,14 @@ function render(s, lines) {
     addCell(tr, moneyFmt.format(Number(line.line_cost))).className = "num";
     linesBody.appendChild(tr);
   }
-  document.getElementById("cost-ingredient-total").textContent = rupees(Number(s.ingredient_cost));
-  document.getElementById("cost-raw-weight").textContent = weightFmt.format(rawWeight) + " g";
-  const nonGram = Number(s.non_gram_lines);
-  document.getElementById("cost-raw-note").textContent = nonGram > 0
+  q("ingredient-total").textContent = rupees(Number(s.ingredient_cost));
+  q("raw-weight").textContent = weightFmt.format(rawWeight) + " g";
+  q("raw-note").textContent = nonGram > 0
     ? `Weight counts g ingredients only. ${nonGram} ml or piece ingredient(s) are in the cost but not in this weight.`
     : "";
 
-  // 2. Cost breakdown
-  const breakdown = document.querySelector("#cost-breakdown-table tbody");
-  breakdown.innerHTML = "";
+  // Cost breakdown
+  const breakdown = q("breakdown-body");
   addRow(breakdown, "Ingredients", rupees(Number(s.ingredient_cost)));
   addRow(breakdown, `Labour (₹ ${moneyFmt.format(Number(s.labour_rate))}/hr × ${weightFmt.format(Number(s.labour_min))} min)`, rupees(Number(s.labour_cost)));
   addRow(breakdown, `Electricity (₹ ${moneyFmt.format(Number(s.electricity_rate))}/hr × ${weightFmt.format(Number(s.electricity_min))} min)`, rupees(Number(s.electricity_cost)));
@@ -149,12 +164,12 @@ function render(s, lines) {
   const warnings = [];
   if (Number(s.labour_rate) === 0 && Number(s.labour_min) > 0) warnings.push("Labour rate is 0");
   if (Number(s.electricity_rate) === 0 && Number(s.electricity_min) > 0) warnings.push("Electricity rate is 0");
-  document.getElementById("cost-rate-warning").textContent = warnings.length
+  q("rate-warning").textContent = warnings.length
     ? warnings.join(". ") + ". Set it under Setup, Rates, or the total will be too low."
     : "";
 
-  // 3. Insights
-  fillStats("cost-actual-stats", "cost-actual-note", [
+  // Insights
+  fillStats(q("actual-stats"), q("actual-note"), [
     ["Weight (from recipe)", productQty > 0 ? weightFmt.format(productQty) + " g" : "Not set"],
     ["Total cost", rupees(total)],
     ["Cost per gram", actualPerGram === null ? "-" : rupeesPerGram(actualPerGram), true],
@@ -163,29 +178,36 @@ function render(s, lines) {
   let estNote = "";
   if (rawWeight === 0) estNote = "No gram ingredients in this recipe, so the weight cannot be estimated.";
   else if (nonGram > 0) estNote = "Raw weight counts g ingredients only.";
-  fillStats("cost-est-stats", "cost-est-note", [
+  fillStats(q("est-stats"), q("est-note"), [
     ["Raw weight (g ingredients)", weightFmt.format(rawWeight) + " g"],
     [`Estimated end weight (× ${YIELD_PERCENT}%)`, weightFmt.format(estWeight) + " g"],
     ["Total cost", rupees(total)],
     ["Cost per estimated gram", estPerGram === null ? "-" : rupeesPerGram(estPerGram), true],
   ], estNote);
 
+  container.innerHTML = "";
+  container.appendChild(frag);
+  return { actualPerGram, estPerGram };
+}
+
+function render(s, lines) {
+  statusEl.textContent = lines.length ? "" : "No ingredients in this recipe yet.";
+  orderResult.innerHTML = "";
+  scaleResult.innerHTML = "";
+
+  const { actualPerGram, estPerGram } = buildReport(mainReport, s, lines);
+  current = { s, lines, actualPerGram, estPerGram };
   resultEl.classList.remove("hidden");
 }
 
-// 4. Cost for an order
+// ---------- 4. Cost for an order ----------
 function renderOrder() {
   orderResult.innerHTML = "";
   if (!current) return;
 
   const grams = Number(document.getElementById("order-grams").value);
-  const addLine = (text) => {
-    const p = document.createElement("p");
-    p.textContent = text;
-    orderResult.appendChild(p);
-  };
   if (!(grams > 0)) {
-    addLine("Enter a quantity above 0.");
+    addLine(orderResult, "Enter a quantity above 0.");
     return;
   }
 
@@ -194,18 +216,85 @@ function renderOrder() {
     [`Based on estimated end weight (${YIELD_PERCENT}%)`, current.estPerGram, "this recipe has no gram ingredients to estimate from."],
   ];
   for (const [label, perGram, missing] of options) {
-    if (perGram === null) addLine(`${label}: ${missing}`);
-    else addLine(`${label}: ${rupeesPerGram(perGram)} per g × ${weightFmt.format(grams)} g = ${rupees(perGram * grams)}`);
+    if (perGram === null) addLine(orderResult, `${label}: ${missing}`);
+    else addLine(orderResult, `${label}: ${rupeesPerGram(perGram)} per g × ${weightFmt.format(grams)} g = ${rupees(perGram * grams)}`);
   }
 }
 
+// ---------- 5. Scale recipe ----------
+// Rounds up to one decimal place: 1.42 -> 1.5, 4.01 -> 4.1, and an exact 3.3 stays 3.3.
+// The inner rounding removes tiny computer-decimal noise (330 / 100 = 3.3000000000000003)
+// so an exact multiple is not wrongly pushed up.
+function roundUpOneDecimal(x) {
+  const tenths = Math.round(x * 10 * 1e6) / 1e6;
+  return Math.ceil(tenths) / 10;
+}
+
+function renderScale() {
+  scaleResult.innerHTML = "";
+  if (!current) return;
+
+  const goal = Number(document.getElementById("scale-grams").value);
+  if (!(goal > 0)) {
+    addLine(scaleResult, "Enter a weight above 0.");
+    return;
+  }
+
+  const { s, lines, actualPerGram } = current;
+  const productQty = Number(s.product_qty_g);
+  if (!(productQty > 0) || actualPerGram === null) {
+    addLine(scaleResult, "Set the product quantity on this recipe first (Setup, Recipes), so it can be scaled.");
+    return;
+  }
+  if (lines.length === 0) {
+    addLine(scaleResult, "This recipe has no ingredients to scale.");
+    return;
+  }
+
+  const rawMultiplier = goal / productQty;
+  const m = roundUpOneDecimal(rawMultiplier);
+  const batchWeight = productQty * m;
+
+  addLine(scaleResult, `Multiplier: ${weightFmt.format(goal)} ÷ ${weightFmt.format(productQty)} = ${multFmt.format(rawMultiplier)}, rounded up to ${m.toFixed(1)}`);
+  addLine(scaleResult, `This batch makes about ${weightFmt.format(batchWeight)} g.`);
+
+  // Scaled ingredient quantities
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  for (const heading of ["Ingredient", "Recipe quantity", "Scaled quantity", "Unit"]) {
+    const th = document.createElement("th");
+    th.textContent = heading;
+    headRow.appendChild(th);
+  }
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  for (const line of lines) {
+    const tr = document.createElement("tr");
+    addCell(tr, line.ingredient_name + (line.is_active ? "" : " (inactive)"));
+    addCell(tr, weightFmt.format(Number(line.quantity))).className = "num";
+    addCell(tr, weightFmt.format(Number(line.quantity) * m)).className = "num";
+    addCell(tr, line.unit);
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+  scaleResult.appendChild(table);
+
+  // Total batch cost, using the actual cost per gram from the first insight
+  addLine(scaleResult, `Cost per gram (actual end product): ${rupeesPerGram(actualPerGram)}`);
+  addLine(scaleResult, `Total batch cost: ${rupeesPerGram(actualPerGram)} per g × ${weightFmt.format(batchWeight)} g = ${rupees(actualPerGram * batchWeight)}`, "strong");
+}
+
 export function initRecipeCost() {
-  select.addEventListener("change", () => {
-    orderResult.innerHTML = "";
-    showRecipe(select.value);
-  });
+  select.addEventListener("change", () => showRecipe(select.value));
   orderForm.addEventListener("submit", (event) => {
     event.preventDefault();
     renderOrder();
+  });
+  scaleForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    renderScale();
   });
 }
