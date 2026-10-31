@@ -1,0 +1,8 @@
+body { font-family: sans-serif; line-height: 1.5; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+h1 { margin-bottom: 0.25rem; }
+h2 { margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 0.25rem; }
+.product { margin: 1rem 0; }
+.product h3 { margin: 0 0 0.25rem; }
+#site-description, .product p, #contact-details p { white-space: pre-line; margin: 0.25rem 0; }
+footer { margin-top: 3rem; font-size: 0.85rem; color: #666; }
+.hidden { display: none; }
