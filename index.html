@@ -27,6 +27,7 @@
       <button type="button" class="inline-btn tab-btn" data-tab="setup">Setup</button>
       <button type="button" class="inline-btn tab-btn" data-tab="recipe-cost">Recipe cost</button>
       <button type="button" class="inline-btn tab-btn" data-tab="backup">Backup</button>
+      <button type="button" class="inline-btn tab-btn" data-tab="website">Website</button>
     </nav>
 
     <!-- ===== Tab: Setup ===== -->
@@ -145,15 +146,43 @@
     <div id="tab-backup" class="tab-panel hidden">
       <section class="block">
         <h2>Backup</h2>
-        <p>Download a copy of your data: ingredients, rates, recipes and recipe ingredients.</p>
+        <p>Download a copy of all your data: ingredients, rates, recipes, recipe ingredients, site content and products.</p>
         <div class="row-buttons">
           <button type="button" id="backup-json-btn" class="inline-btn">Download JSON</button>
           <button type="button" id="backup-csv-btn" class="inline-btn">Download CSV (zip)</button>
         </div>
         <p id="backup-status"></p>
-        <p class="hint">JSON is one file with all four tables. The CSV zip has one file per table, which opens in Excel. These files contain your prices and costs, so keep them somewhere private and never put them in the GitHub repository.</p>
+        <p class="hint">JSON is one file with all the tables. The CSV zip has one file per table, which opens in Excel. These files contain your prices and costs, so keep them somewhere private and never put them in the GitHub repository.</p>
       </section>
     </div>
+    <!-- ===== Tab: Website ===== -->
+    <div id="tab-website" class="tab-panel hidden">
+      <section class="block">
+        <h2>Site content</h2>
+        <p class="hint">Text for the customer page. Once that page is live, everything here is public, so never put private details in it.</p>
+        <p id="site-status"></p>
+        <table id="site-table">
+          <thead>
+            <tr><th>Label</th><th>Value</th><th>Last updated</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="block">
+        <h2>Products</h2>
+        <button id="add-product-btn" class="inline-btn">+ Add product</button>
+        <p id="products-status"></p>
+        <table id="products-table">
+          <thead>
+            <tr><th>Name</th><th>Description</th><th>Visible on site</th><th>Last updated</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="hint">Untick "Visible on site" to hide a product without deleting it.</p>
+      </section>
+    </div>
+    
   </section>
 
   <!-- Pop-up: ingredient form (Add and Edit) -->
@@ -272,6 +301,45 @@
     </form>
     <hr>
     <button type="button" id="lines-close-btn">Close</button>
+  </dialog>
+    <!-- Pop-up: site content (Edit only) -->
+  <dialog id="site-dialog">
+    <form id="site-form">
+      <h3 id="site-dialog-title"></h3>
+      <input type="hidden" id="sc-key">
+
+      <label for="sc-value">Text</label>
+      <textarea id="sc-value" rows="5" maxlength="2000"></textarea>
+      <p class="hint">Leave it empty to hide this line on the customer page.</p>
+
+      <p id="site-form-error" class="error"></p>
+      <div class="row-buttons">
+        <button type="submit" id="site-save-btn">Save</button>
+        <button type="button" id="site-cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Pop-up: product form (Add and Edit) -->
+  <dialog id="product-dialog">
+    <form id="product-form">
+      <h3 id="product-dialog-title"></h3>
+      <input type="hidden" id="p-id">
+
+      <label for="p-name">Name (as customers will see it)</label>
+      <input id="p-name" type="text" maxlength="100" required>
+
+      <label for="p-description">Description</label>
+      <textarea id="p-description" rows="4" maxlength="1000"></textarea>
+
+      <label class="plain"><input id="p-visible" type="checkbox"> Visible on site</label>
+
+      <p id="product-form-error" class="error"></p>
+      <div class="row-buttons">
+        <button type="submit" id="product-save-btn">Save</button>
+        <button type="button" id="product-cancel-btn">Cancel</button>
+      </div>
+    </form>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
