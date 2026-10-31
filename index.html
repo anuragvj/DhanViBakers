@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DhanVi Bakers</title>
+  <meta name="description" content="DhanVi Bakers: our products and how to contact us.">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header>
+    <h1 id="site-name">DhanVi Bakers</h1>
+    <p id="site-description" class="hidden"></p>
+  </header>
+
+  <main>
+    <p id="site-status">Loading...</p>
+
+    <section id="products-section" class="hidden">
+      <h2>Our products</h2>
+      <div id="product-list"></div>
+    </section>
+
+    <section id="contact-section" class="hidden">
+      <h2>Contact</h2>
+      <div id="contact-details"></div>
+    </section>
+
+    <noscript><p>This page needs JavaScript to show our products.</p></noscript>
+  </main>
+
+  <footer>
+    <a href="admin.html">Admin login</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+  <script type="module" src="js/public.js"></script>
+</body>
+</html>
