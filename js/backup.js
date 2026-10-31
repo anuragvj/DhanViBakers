@@ -7,6 +7,8 @@ const TABLES = [
   { name: "rates", order: "name", label: "rates" },
   { name: "recipes", order: "id", label: "recipes" },
   { name: "recipe_ingredients", order: "id", label: "recipe ingredient lines" },
+  { name: "site_content", order: "key", label: "site content rows" },
+  { name: "products", order: "id", label: "products" },
 ];
 const PAGE_SIZE = 1000; // Supabase returns a limited number of rows per request, so we read in pages
 
