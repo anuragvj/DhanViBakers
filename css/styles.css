@@ -42,3 +42,7 @@ section.block { margin-top: 2.5rem; }
 /* Login and backup */
 label.plain { font-weight: normal; }
 #backup-status { margin: 0.75rem 0; }
+
+/* Website tab */
+.muted { color: #777; }
+#site-dialog textarea, #product-dialog textarea { resize: vertical; }
