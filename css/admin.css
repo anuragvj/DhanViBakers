@@ -1,0 +1,66 @@
+/* Admin pages only */
+body { max-width:1100px; margin:0 auto; padding:0 1rem 3rem; }
+.brand-title { font-size:2.4rem; margin:0; }
+.admin-top { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; padding:1rem 0; border-bottom:1px solid var(--line); }
+.admin-top .brand-title { margin-right:auto; }
+.admin-top .btn { padding:.4rem 1rem; font-size:.9rem; margin:0; }
+.who { font-size:.9rem; color:var(--muted); }
+
+.login-card { max-width:24rem; margin:3rem auto; padding:1.5rem 1.75rem; background:var(--tile); border-radius:12px; }
+.login-card .brand-title { text-align:center; }
+.login-card h2 { text-align:center; font-size:1.6rem; margin:.25rem 0 1rem; }
+.login-card .back { text-align:center; margin:1rem 0 0; font-size:.9rem; }
+#login-btn { width:100%; margin:.75rem 0 0; }
+
+label { display:block; margin-top:.75rem; font-weight:700; }
+label.plain { font-weight:400; }
+section.block { margin-top:2rem; }
+section.block h2 { font-size:2rem; margin:0 0 .5rem; }
+#cost-recipe { max-width:24rem; }
+
+/* Tabs */
+.tabs { display:flex; gap:1.25rem; margin:1rem 0 0; border-bottom:1px solid var(--line); overflow-x:auto; }
+.tabs .tab-btn { flex:none; margin:0 0 -1px; padding:.6rem .1rem; border:0; border-bottom:3px solid transparent; border-radius:0; background:none; color:var(--cocoa); font-size:1rem; }
+.tabs .tab-btn:hover { background:none; border-bottom-color:var(--caramel); }
+.tabs .tab-btn.active { border-bottom-color:var(--deep); font-weight:700; }
+.tab-panel { overflow-x:auto; }
+
+/* Buttons: outlined by default, filled for the main actions */
+button { display:inline-block; width:auto; margin:.25rem .25rem .25rem 0; padding:.5rem 1.1rem; border:1px solid var(--deep); border-radius:999px; background:transparent; color:var(--deep); font:inherit; font-size:.9rem; cursor:pointer; }
+button:hover { background:rgba(140,90,50,.1); }
+button:disabled { opacity:.55; cursor:default; }
+button[type="submit"], #login-btn, #add-ingredient-btn, #add-recipe-btn, #add-product-btn, #backup-json-btn, #backup-csv-btn { background:var(--deep); color:#fff; }
+button[type="submit"]:hover, #login-btn:hover, #add-ingredient-btn:hover, #add-recipe-btn:hover, #add-product-btn:hover, #backup-json-btn:hover, #backup-csv-btn:hover { background:#744A29; }
+.row-buttons button { flex:1; margin:0; }
+.row-buttons .inline-btn { flex:none; margin-right:.5rem; }
+td button { padding:.2rem .7rem; font-size:.82rem; margin:.1rem .25rem .1rem 0; }
+td button:nth-of-type(2) { border-color:var(--danger); color:var(--danger); } /* the second button in an Actions cell is Delete or Remove */
+td button:nth-of-type(2):hover { background:rgba(155,44,44,.08); }
+
+/* Tables */
+table { border-collapse:collapse; width:100%; margin-bottom:1rem; background:#fff; }
+th, td { border:1px solid var(--line); padding:.5rem .6rem; text-align:left; vertical-align:top; }
+th { background:var(--tile); font-weight:700; }
+tbody tr:nth-child(even) { background:#FBF8F3; }
+.num { text-align:right; }
+.total-row td { font-weight:700; background:var(--tile); }
+.muted { color:var(--muted); }
+.warning { color:#7A5B00; }
+#lines-dialog { width:min(40rem,94vw); }
+
+/* Recipe cost tab */
+.cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:1rem; margin-bottom:1rem; }
+.card { border:1px solid var(--line); border-radius:12px; padding:1rem; background:#fff; }
+.card h4 { margin:0 0 .75rem; }
+.stats { display:grid; grid-template-columns:1fr auto; gap:.3rem 1rem; margin:0; }
+.stats dt, .stats dd { margin:0; }
+.stats dd { text-align:right; }
+.stats .strong { font-weight:700; }
+.order-row { display:flex; gap:.5rem; align-items:center; }
+.order-row input { width:10rem; margin:0; }
+.order-row button { margin:0; }
+#scale-result p, #order-result p { margin:.25rem 0; }
+#scale-result .strong { font-weight:700; }
+#backup-status { margin:.75rem 0; }
+
+@media (max-width:700px) { .brand-title { font-size:2rem; } th, td { padding:.4rem; } }
