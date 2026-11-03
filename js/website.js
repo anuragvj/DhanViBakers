@@ -1,7 +1,7 @@
 import { sb } from "./supabaseClient.js";
 import { formatIST, addCell, systemMessage } from "./utils.js";
 
-const SINGLE_LINE_KEYS = ["business_name", "phone", "email"]; // everything else can have line breaks
+const SINGLE_LINE_KEYS = ["business_name", "founder_name", "phone", "email"];
 const CLIP = 80; // table cells show only the first part of long text
 
 function clip(text) {
