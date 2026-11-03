@@ -33,6 +33,10 @@ export function initAuth(onSignedIn) {
       if (wasSignedIn && !userClickedSignOut) {
         errorEl.textContent = "Your session ended. Please sign in again.";
       }
+      if (wasSignedIn && userClickedSignOut) {
+        location.replace("index.html"); // signed out on purpose: back to the website
+        return;
+      }
       userClickedSignOut = false;
     }
   }
