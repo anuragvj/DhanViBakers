@@ -4,35 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
-  <meta name="description" content="DhanVi Bakers: our products and how to contact us.">
+  <meta name="description" content="DhanVi Bakers: our products, our story and how to contact us.">
+  <meta property="og:title" content="DhanVi Bakers">
+  <meta property="og:description" content="Our products, our story and how to contact us.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css">
 </head>
-<body>
-  <header>
-    <h1 id="site-name">DhanVi Bakers</h1>
-    <p id="site-description" class="hidden"></p>
+<body id="top">
+  <header class="top">
+    <a class="brand" id="brand" href="#top">DhanVi Bakers</a>
+    <nav>
+      <a href="#products">Products</a>
+      <a href="#about">About us</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button type="button" class="js-admin">Admin</button>
   </header>
 
-  <main>
-    <p id="site-status">Loading...</p>
+  <section class="hero">
+    <h1 id="site-name">DhanVi Bakers</h1>
+    <p id="tagline" class="hidden"></p>
+    <a class="btn" href="#products">View our products</a>
+  </section>
+  <p id="site-status">Loading...</p>
 
-    <section id="products-section" class="hidden">
-      <h2>Our products</h2>
-      <div id="product-list"></div>
-    </section>
+  <section id="products" class="sec hidden">
+    <h2>Our products</h2>
+    <div class="carousel" id="carousel" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Our products">
+      <div class="slides" id="slides"></div>
+      <button type="button" class="arrow prev" id="prev" aria-label="Previous product">&#8249;</button>
+      <button type="button" class="arrow next" id="next" aria-label="Next product">&#8250;</button>
+    </div>
+    <div class="dots" id="dots"></div>
+    <p class="count" id="counter" aria-live="polite"></p>
+  </section>
 
-    <section id="contact-section" class="hidden">
-      <h2>Contact</h2>
-      <div id="contact-details"></div>
-    </section>
+  <section id="about" class="sec hidden">
+    <h2>About us</h2>
+    <div class="wrap">
+      <div id="about-text"></div>
+      <p id="founder" class="sig hidden"></p>
+    </div>
+  </section>
 
-    <noscript><p>This page needs JavaScript to show our products.</p></noscript>
-  </main>
+  <section id="contact" class="sec hidden">
+    <h2>Contact</h2>
+    <div id="contact-details"></div>
+    <div class="actions">
+      <a id="call-btn" class="btn hidden">Call us</a>
+      <a id="mail-btn" class="btn ghost hidden">Email us</a>
+    </div>
+  </section>
 
-  <footer>
-    <a href="admin.html">Admin login</a>
-  </footer>
+  <footer>DhanVi Bakers &middot; <button type="button" class="js-admin">Admin login</button></footer>
 
+  <dialog id="login-dialog">
+    <form id="login-form">
+      <h3>Admin login</h3>
+      <label>Email <input id="login-email" type="email" required autocomplete="username"></label>
+      <label>Password <input id="login-pass" type="password" required autocomplete="current-password"></label>
+      <label class="check"><input id="login-remember" type="checkbox"> Keep me signed in on this device</label>
+      <p id="login-error" class="err" role="alert"></p>
+      <div class="row">
+        <button type="submit" id="login-submit" class="btn">Sign in</button>
+        <button type="button" id="login-cancel" class="btn ghost">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <noscript><p style="text-align:center">This page needs JavaScript to show our products.</p></noscript>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
   <script type="module" src="js/public.js"></script>
 </body>
