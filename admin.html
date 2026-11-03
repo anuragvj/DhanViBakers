@@ -5,24 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DhanVi Bakers</title>
   <meta name="robots" content="noindex, nofollow">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Satisfy&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-  <h1>DhanVi Bakers</h1>
-
-  <section id="login-view" class="hidden">
-    <h2>Admin login</h2>
-    <input id="email" type="email" placeholder="Email" autocomplete="username">
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-    <label class="plain"><input id="remember" type="checkbox"> Keep me signed in on this device</label>
-    <p class="hint">Leave this unticked on a shared computer.</p>
-    <button id="login-btn">Sign in</button>
-    <p id="login-error" class="error"></p>
+    <section id="login-view" class="hidden">
+    <div class="login-card">
+      <h1 class="brand-title">DhanVi Bakers</h1>
+      <h2>Admin login</h2>
+      <input id="email" type="email" placeholder="Email" autocomplete="username" aria-label="Email">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
+      <label class="plain"><input id="remember" type="checkbox"> Keep me signed in on this device</label>
+      <p class="hint">Leave this unticked on a shared computer.</p>
+      <button id="login-btn">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+      <p class="back"><a href="index.html">&larr; Back to website</a></p>
+    </div>
   </section>
 
   <section id="app-view" class="hidden">
-    <p>Signed in as <strong id="user-email"></strong></p>
-    <button id="logout-btn" class="inline-btn">Sign out</button>
+    <header class="admin-top">
+      <h1 class="brand-title">DhanVi Bakers</h1>
+      <span class="who">Signed in as <strong id="user-email"></strong></span>
+      <a class="btn ghost" href="index.html" target="_blank" rel="noopener">View website</a>
+      <button id="logout-btn" class="btn ghost">Sign out</button>
+    </header>
 
     <nav class="tabs">
       <button type="button" class="inline-btn tab-btn" data-tab="setup">Setup</button>
