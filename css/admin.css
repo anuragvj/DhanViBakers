@@ -23,7 +23,8 @@ section.block h2 { font-size:2rem; margin:0 0 .5rem; }
 .tabs .tab-btn { flex:none; margin:0 0 -1px; padding:.6rem .1rem; border:0; border-bottom:3px solid transparent; border-radius:0; background:none; color:var(--cocoa); font-size:1rem; }
 .tabs .tab-btn:hover { background:none; border-bottom-color:var(--caramel); }
 .tabs .tab-btn.active { border-bottom-color:var(--deep); font-weight:700; }
-.tab-panel { overflow-x:auto; }
+.tabs .tab-btn:focus-visible { outline-offset:-3px; }
+.tab-panel { overflow-x:auto; padding:6px; margin:-6px; }
 
 /* Buttons: outlined by default, filled for the main actions */
 button { display:inline-block; width:auto; margin:.25rem .25rem .25rem 0; padding:.5rem 1.1rem; border:1px solid var(--deep); border-radius:999px; background:transparent; color:var(--deep); font:inherit; font-size:.9rem; cursor:pointer; }
