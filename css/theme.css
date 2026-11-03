@@ -1,0 +1,37 @@
+/* Shared look for the website and the admin pages */
+:root {
+  --cream:#FAF6F0; --tile:#EFE6DA; --cocoa:#3B2A22; --caramel:#B07A4B; --deep:#8C5A32;
+  --muted:#6B5A50; --line:#E3D8C9; --field:#8B7A6C; --danger:#9B2C2C;
+  --display:Satisfy,"Brush Script MT",cursive; --body:Lato,system-ui,sans-serif;
+}
+*, *::before, *::after { box-sizing:border-box; }
+body { margin:0; background:var(--cream); color:var(--cocoa); font:1rem/1.6 var(--body); }
+h1, h2 { font-family:var(--display); font-weight:400; line-height:1.15; } /* Satisfy has one weight: never bold */
+h3, h4 { font-family:var(--body); font-weight:700; }
+a { color:var(--deep); }
+:focus-visible { outline:3px solid var(--caramel); outline-offset:2px; }
+.hidden { display:none !important; }
+.hint { margin:.25rem 0; font-size:.85rem; color:var(--muted); }
+.error, .err { color:var(--danger); min-height:1.2em; }
+
+.btn { display:inline-block; padding:.7rem 1.6rem; border-radius:999px; border:1px solid var(--deep); background:var(--deep); color:#fff; text-decoration:none; font:inherit; cursor:pointer; text-align:center; }
+.btn:hover { background:#744A29; }
+.btn.ghost { background:transparent; color:var(--deep); }
+.btn.ghost:hover { background:rgba(140,90,50,.1); }
+
+input:not([type="checkbox"]):not([type="hidden"]), select, textarea {
+  display:block; width:100%; padding:.6rem .7rem; margin:.35rem 0; border:1px solid var(--field);
+  border-radius:8px; background:#fff; color:var(--cocoa); font:inherit;
+}
+input[type="checkbox"] { width:auto; margin-right:.5rem; }
+textarea { resize:vertical; }
+
+dialog { width:min(26rem,92vw); max-height:90vh; overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--cream); color:var(--cocoa); padding:1.5rem; }
+dialog::backdrop { background:rgba(59,42,34,.5); }
+dialog h3 { margin:0 0 .5rem; font-size:1.2rem; }
+dialog label { display:block; margin-top:.75rem; font-weight:700; }
+dialog label.plain, dialog label.check { font-weight:400; }
+.row, .row-buttons { display:flex; gap:.5rem; margin-top:1rem; }
+.row .btn { flex:1; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
