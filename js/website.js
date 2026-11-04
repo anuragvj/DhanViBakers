@@ -1,12 +1,21 @@
 import { sb } from "./supabaseClient.js";
 import { formatIST, addCell, systemMessage } from "./utils.js";
 
-const SINGLE_LINE_KEYS = ["business_name", "founder_name", "phone", "email"];
+const SINGLE_LINE_KEYS = ["business_name", "founder_name", "phone", "email"]; // everything else can have line breaks
 const CLIP = 80; // table cells show only the first part of long text
+
+const BUCKET = "product-photos";
+const PHOTO_SIZE = 900;      // photos are shrunk to this many pixels square
+const MAX_PICK_MB = 15;      // refuse enormous files before reading them
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function clip(text) {
   const flat = text.replace(/\s+/g, " ").trim();
   return flat.length > CLIP ? flat.slice(0, CLIP) + "…" : flat;
+}
+
+function photoUrl(path) {
+  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
 // =====================================================
@@ -61,7 +70,7 @@ function openSiteForm(row) {
 function siteFriendlyError(error) {
   const system = systemMessage(error);
   if (system) return system;
-  if (error.code === "23514") return "The text is too long (up to 2000 characters).";
+  if (error.code === "23514") return "The text is too long (up to 4000 characters).";
   return error.message;
 }
 
@@ -71,6 +80,57 @@ function siteFriendlyError(error) {
 const productDialog = document.getElementById("product-dialog");
 const productForm = document.getElementById("product-form");
 const productFormError = document.getElementById("product-form-error");
+
+// Photo state of the open form
+let editingPath = null;      // the photo the product has now
+let pickedFile = null;       // a photo chosen in this form, not uploaded yet
+let removeRequested = false; // "Remove photo" was clicked
+let previewUrl = null;
+
+const photoInput = document.getElementById("p-photo");
+const previewBox = document.getElementById("p-photo-preview");
+const previewImg = previewBox.querySelector("img");
+const removeBtn = document.getElementById("p-photo-remove");
+
+function refreshPhotoUi() {
+  if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+  let src = null;
+  if (pickedFile) {
+    previewUrl = URL.createObjectURL(pickedFile);
+    src = previewUrl;
+  } else if (editingPath && !removeRequested) {
+    src = photoUrl(editingPath);
+  }
+  previewBox.classList.toggle("hidden", !src);
+  if (src) previewImg.src = src;
+  removeBtn.classList.toggle("hidden", !src);
+  removeBtn.textContent = pickedFile ? "Clear chosen photo" : "Remove photo";
+}
+
+// Crops to a centred square, shrinks it, and returns a JPEG file ready to upload.
+async function resizeToJpeg(file) {
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const side = Math.min(bitmap.width, bitmap.height);
+  const out = Math.min(PHOTO_SIZE, side);
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = out;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#FAF6F0"; // cream, so transparent PNGs do not turn black
+  ctx.fillRect(0, 0, out, out);
+  ctx.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, out, out);
+  if (bitmap.close) bitmap.close();
+
+  const toBlob = (q) => new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", q));
+  let blob = await toBlob(0.85);
+  if (blob && blob.size > 900 * 1024) blob = await toBlob(0.7);
+  if (!blob) throw new Error("The photo could not be prepared.");
+  return blob;
+}
+
+async function removePhotoQuietly(path) {
+  if (!path) return;
+  await sb.storage.from(BUCKET).remove([path]); // a failure only leaves an unused file behind
+}
 
 export async function loadProducts() {
   const status = document.getElementById("products-status");
@@ -88,6 +148,18 @@ export async function loadProducts() {
   data.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
   for (const row of data) {
     const tr = document.createElement("tr");
+
+    const photoTd = document.createElement("td");
+    if (row.image_path) {
+      const img = document.createElement("img");
+      img.className = "thumb";
+      img.alt = "";
+      img.loading = "lazy";
+      img.src = photoUrl(row.image_path);
+      photoTd.appendChild(img);
+    }
+    tr.appendChild(photoTd);
+
     addCell(tr, row.name);
     addCell(tr, row.description ? clip(row.description) : "");
     addCell(tr, row.is_visible ? "Yes" : "No");
@@ -110,6 +182,9 @@ export async function loadProducts() {
 function openProductForm(row) {
   productFormError.textContent = "";
   productForm.reset();
+  pickedFile = null;
+  removeRequested = false;
+  editingPath = row ? row.image_path || null : null;
   if (row) {
     document.getElementById("product-dialog-title").textContent = "Edit product";
     document.getElementById("p-id").value = row.id;
@@ -121,6 +196,7 @@ function openProductForm(row) {
     document.getElementById("p-id").value = "";
     document.getElementById("p-visible").checked = true;
   }
+  refreshPhotoUi();
   productDialog.showModal();
 }
 
@@ -141,6 +217,8 @@ async function deleteProduct(row) {
   }
   if (!data || data.length === 0) {
     alert("Nothing was deleted. The product may already be gone.");
+  } else {
+    await removePhotoQuietly(row.image_path);
   }
   loadProducts();
 }
@@ -179,6 +257,35 @@ export function initWebsite() {
   document.getElementById("add-product-btn").addEventListener("click", () => openProductForm(null));
   document.getElementById("product-cancel-btn").addEventListener("click", () => productDialog.close());
 
+  photoInput.addEventListener("change", () => {
+    productFormError.textContent = "";
+    const file = photoInput.files[0];
+    if (!file) { pickedFile = null; refreshPhotoUi(); return; }
+    if (!PHOTO_TYPES.includes(file.type)) {
+      productFormError.textContent = "Please choose a JPEG, PNG or WebP photo.";
+      photoInput.value = "";
+      pickedFile = null;
+    } else if (file.size > MAX_PICK_MB * 1024 * 1024) {
+      productFormError.textContent = `That file is larger than ${MAX_PICK_MB} MB. Please choose a smaller one.`;
+      photoInput.value = "";
+      pickedFile = null;
+    } else {
+      pickedFile = file;
+      removeRequested = false;
+    }
+    refreshPhotoUi();
+  });
+
+  removeBtn.addEventListener("click", () => {
+    if (pickedFile) {
+      pickedFile = null;
+      photoInput.value = "";
+    } else if (editingPath) {
+      removeRequested = true;
+    }
+    refreshPhotoUi();
+  });
+
   productForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     productFormError.textContent = "";
@@ -192,6 +299,30 @@ export function initWebsite() {
       is_visible: document.getElementById("p-visible").checked,
     };
 
+    // Photo: upload first, so a failed upload never leaves a half-saved product
+    let uploadedPath = null;
+    if (pickedFile) {
+      try {
+        const blob = await resizeToJpeg(pickedFile);
+        const path = crypto.randomUUID() + ".jpg";
+        const { error: upErr } = await sb.storage.from(BUCKET).upload(path, blob, {
+          contentType: "image/jpeg",
+          cacheControl: "31536000", // names never repeat, so browsers can keep photos for a year
+          upsert: false,
+        });
+        if (upErr) throw upErr;
+        uploadedPath = path;
+        payload.image_path = path;
+      } catch (err) {
+        saveBtn.disabled = false;
+        productFormError.textContent = "The photo could not be uploaded: " +
+          (systemMessage(err) || "this file may not be a readable image. " + (err.message || ""));
+        return;
+      }
+    } else if (removeRequested) {
+      payload.image_path = null;
+    }
+
     let result;
     if (id) {
       result = await sb.from("products").update(payload).eq("id", id).select();
@@ -200,14 +331,17 @@ export function initWebsite() {
     }
     saveBtn.disabled = false;
 
-    if (result.error) {
-      productFormError.textContent = productFriendlyError(result.error);
+    if (result.error || !result.data || result.data.length === 0) {
+      if (uploadedPath) await removePhotoQuietly(uploadedPath); // do not leave an unused upload
+      productFormError.textContent = result.error
+        ? productFriendlyError(result.error)
+        : "Nothing was saved. The product may have been removed.";
       return;
     }
-    if (!result.data || result.data.length === 0) {
-      productFormError.textContent = "Nothing was saved. The product may have been removed.";
-      return;
-    }
+
+    // The old photo is no longer used, so delete it
+    if ((uploadedPath || removeRequested) && editingPath) await removePhotoQuietly(editingPath);
+
     productDialog.close();
     loadProducts();
   });
