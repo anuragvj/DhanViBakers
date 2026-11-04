@@ -163,7 +163,7 @@
           <button type="button" id="backup-csv-btn" class="inline-btn">Download CSV (zip)</button>
         </div>
         <p id="backup-status"></p>
-        <p class="hint">JSON is one file with all the tables. The CSV zip has one file per table, which opens in Excel. These files contain your prices and costs, so keep them somewhere private and never put them in the GitHub repository.</p>
+        <p class="hint">JSON is one file with all the tables. The CSV zip has one file per table, which opens in Excel. These files contain your prices and costs, so keep them somewhere private and never put them in the GitHub repository. Product photos are not included, only their file names, so keep your original photos safe.</p>
       </section>
     </div>
     <!-- ===== Tab: Website ===== -->
@@ -186,7 +186,7 @@
         <p id="products-status"></p>
         <table id="products-table">
           <thead>
-            <tr><th>Name</th><th>Description</th><th>Visible on site</th><th>Last updated</th><th>Actions</th></tr>
+            <tr><th>Photo</th><th>Name</th><th>Description</th><th>Visible on site</th><th>Last updated</th><th>Actions</th></tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -342,6 +342,11 @@
 
       <label for="p-description">Description</label>
       <textarea id="p-description" rows="4" maxlength="1000"></textarea>
+      <label for="p-photo">Photo</label>
+      <div id="p-photo-preview" class="photo-preview hidden"><img alt="Preview of the chosen photo"></div>
+      <input id="p-photo" type="file" accept="image/jpeg,image/png,image/webp">
+      <p class="hint">Square photos work best. Other shapes are cropped to a square from the centre. The page shrinks the photo before uploading.</p>
+      <button type="button" id="p-photo-remove" class="hidden">Remove photo</button>
 
       <label class="plain"><input id="p-visible" type="checkbox"> Visible on site</label>
 
