@@ -16,12 +16,12 @@
 <body id="top">
   <header class="top">
     <a class="brand" id="brand" href="#top">DhanVi Bakers</a>
-    <nav>
+      <nav>
       <a href="#products">Products</a>
       <a href="#about">About us</a>
       <a href="#contact">Contact</a>
+      <button type="button" class="js-admin">Admin</button>
     </nav>
-    <button type="button" class="js-admin">Admin</button>
   </header>
 
   <section class="hero">
@@ -59,11 +59,12 @@
     </div>
   </section>
 
-  <footer>DhanVi Bakers &middot; <button type="button" class="js-admin">Admin login</button></footer>
+    <footer>DhanVi Bakers &middot; Bengaluru, Karnataka</footer>
 
   <dialog id="login-dialog">
     <form id="login-form">
       <h3>Admin login</h3>
+      <p class="hint">This sign-in is for DhanVi Bakers admins only. Customers don’t need an account.</p>
       <label>Email <input id="login-email" type="email" required autocomplete="username"></label>
       <label>Password <input id="login-pass" type="password" required autocomplete="current-password"></label>
       <label class="check"><input id="login-remember" type="checkbox"> Keep me signed in on this device</label>
