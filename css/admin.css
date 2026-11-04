@@ -65,3 +65,8 @@ tbody tr:nth-child(even) { background:#FBF8F3; }
 #backup-status { margin:.75rem 0; }
 
 @media (max-width:700px) { .brand-title { font-size:2rem; } th, td { padding:.4rem; } }
+
+/* Product photos */
+.thumb { display:block; width:48px; height:48px; object-fit:cover; border-radius:6px; background:var(--tile); }
+.photo-preview { margin:.5rem 0; }
+.photo-preview img { display:block; width:100%; max-width:220px; aspect-ratio:1/1; object-fit:cover; border-radius:8px; background:var(--tile); }
