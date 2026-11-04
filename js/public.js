@@ -16,6 +16,16 @@ function setSection(id, visible) {
 
 // ---------- Carousel ----------
 let index = 0, count = 0;
+
+// Photos are fetched only for the slide on show and its two neighbours
+function loadNear(i) {
+  const slides = document.querySelectorAll(".slide");
+  for (const k of [i - 1, i, i + 1]) {
+    const img = slides[(k + count) % count]?.querySelector("img[data-src]");
+    if (img) { img.src = img.dataset.src; img.removeAttribute("data-src"); }
+  }
+}
+
 function go(i) {
   if (!count) return;
   index = (i + count) % count; // wraps around at both ends
@@ -23,6 +33,7 @@ function go(i) {
   document.querySelectorAll(".slide").forEach((s, n) => s.setAttribute("aria-hidden", n !== index));
   document.querySelectorAll(".dot").forEach((d, n) => d.classList.toggle("on", n === index));
   $("counter").textContent = `${index + 1} of ${count}`;
+  loadNear(index);
 }
 
 function buildCarousel(products) {
@@ -32,10 +43,28 @@ function buildCarousel(products) {
   products.forEach((p, n) => {
     const slide = document.createElement("article");
     slide.className = "slide";
-    const photo = document.createElement("div"); // the photo goes here later; for now a letter tile
+
+    const photo = document.createElement("div");
     photo.className = "photo";
-    photo.setAttribute("aria-hidden", "true");
-    photo.textContent = p.name.trim().charAt(0).toUpperCase();
+    const letter = p.name.trim().charAt(0).toUpperCase();
+    if (p.image_path) {
+      const img = document.createElement("img");
+      img.alt = p.name;
+      img.width = img.height = 900;
+      img.decoding = "async";
+      img.dataset.src = sb.storage.from("product-photos").getPublicUrl(p.image_path).data.publicUrl;
+      // If a photo cannot be loaded, fall back to the letter tile
+      img.addEventListener("error", () => {
+        img.remove();
+        photo.textContent = letter;
+        photo.setAttribute("aria-hidden", "true");
+      });
+      photo.appendChild(img);
+    } else {
+      photo.setAttribute("aria-hidden", "true");
+      photo.textContent = letter;
+    }
+
     const text = document.createElement("div");
     text.className = "text";
     const title = document.createElement("h3");
@@ -122,7 +151,7 @@ async function load() {
   try {
     [c, p] = await Promise.all([
       sb.from("site_content").select("key, value"),
-      sb.from("products").select("name, description").eq("is_visible", true),
+      sb.from("products").select("name, description, image_path").eq("is_visible", true),
     ]);
   } catch { c = p = { error: true }; }
 
